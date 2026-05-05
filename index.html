@@ -322,6 +322,8 @@
     .chat-id { min-width: 0; flex: 1; }
     .chat-id-name  { font-size: 14px; }
     .chat-id-phone { font-size: 11px; gap: 4px; flex-wrap: nowrap; }
+    /* Ocultar número de telefone no mobile — só mostra botão WA */
+    #cidPhone { display: none; }
 
     /* Mobile: esconder badge de status da coluna desktop */
     .desktop-status { display: none; }
@@ -357,6 +359,7 @@
       .chat-id { display: flex !important; }
       .chat-id-name  { font-size: 15px; }
       .chat-id-phone { font-size: 12px; gap: 6px; }
+      #cidPhone { display: inline; }
 
       /* Lista: voltar para grid tabela */
       .att-row   { padding: 14px 20px; }
@@ -402,7 +405,7 @@
   <div class="topbar">
     <button class="icon-btn btn-back" id="btnBack" onclick="navBack()" title="Voltar">←</button>
 
-    <div class="brand">
+    <div class="brand" id="brandEl">
       <div class="brand-mark">C</div>
       <div>
         <div class="brand-name">CURI</div>
@@ -857,15 +860,17 @@ function buildBubble(m) {
 function navToChat() {
   document.getElementById('listPanel').classList.add('hidden');
   document.getElementById('chatPanel').classList.add('show');
-  document.getElementById('btnBack').style.display = 'flex';
+  document.getElementById('btnBack').style.display  = 'flex';
   document.getElementById('kpiStrip').style.display = 'none';
+  document.getElementById('brandEl').style.display  = 'none';
 }
 function navBack() {
   document.getElementById('listPanel').classList.remove('hidden');
   document.getElementById('chatPanel').classList.remove('show');
-  document.getElementById('btnBack').style.display = 'none';
-  document.getElementById('chatId').style.display  = 'none';
+  document.getElementById('btnBack').style.display  = 'none';
+  document.getElementById('chatId').style.display   = 'none';
   document.getElementById('kpiStrip').style.display = '';
+  document.getElementById('brandEl').style.display  = '';
 }
 
 window.addEventListener('resize', () => {
