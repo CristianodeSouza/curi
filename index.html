@@ -265,50 +265,133 @@
     @keyframes spin  { to { transform: rotate(360deg); } }
     @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.25} }
 
-    /* ══ MOBILE (< 768px) ══ */
-    @media (max-width: 767px) {
-      .kpi-strip { grid-template-columns: repeat(2,1fr); padding: 10px 14px; gap: 8px; }
-      .kpi-val   { font-size: 22px; }
-      .topbar    { padding: 0 14px; }
-      .date-wrap { padding: 6px 8px; }
-      input[type="date"] { width: 108px; }
+    /* ══ MOBILE-FIRST: base styles já são mobile ══ */
 
-      /* Card layout for mobile rows */
-      .att-row .tbl-row {
-        grid-template-columns: 1fr auto;
-        grid-template-areas: "name status" "wa   action" "ag   ag";
-        grid-template-rows: auto auto auto;
-      }
-      .att-row .tbl-row > :nth-child(1) { grid-area: name; }
-      .att-row .tbl-row > :nth-child(2) { grid-area: wa; }
-      .att-row .tbl-row > :nth-child(3) { grid-area: ag; font-size: 11px; }
-      .att-row .tbl-row > :nth-child(4) { display: none; }
-      .att-row .tbl-row > :nth-child(5) { grid-area: status; display: flex; justify-content: flex-end; }
-      .att-row .tbl-row > :nth-child(6) { grid-area: action; display: flex; justify-content: flex-end; }
+    /* Topbar: esconde brand-sub e sep por padrão (mobile) */
+    .brand-sub { display: none; }
+    .sep       { display: none; }
+    .btn-back  { display: none; }
 
-      .list-panel.hidden { display: none; }
-      .chat-panel.show   { display: flex; }
+    /* Date input: compacto por padrão */
+    input[type="date"] { width: 96px; }
+    .date-wrap { padding: 6px 8px; gap: 4px; }
 
-      .btn-back { display: flex !important; }
-      .brand    { display: none; }
-      .sep      { display: none; }
-      .chat-id  { display: flex !important; }
+    /* WA btn: só ícone no mobile */
+    .wa-btn-text { display: none; }
 
-      .msgs { padding: 12px 14px; }
-      .bubble-wrap { max-width: 88%; }
+    /* KPI strip: 2 colunas no mobile */
+    .kpi-strip { grid-template-columns: repeat(2,1fr); padding: 10px 12px; gap: 8px; }
+    .kpi       { padding: 10px 12px; }
+    .kpi-lbl   { font-size: 9px; letter-spacing: .6px; }
+    .kpi-val   { font-size: 22px; margin-top: 4px; }
+    .kpi-sub   { display: none; }
+
+    /* Lista: card mobile (flex coluna) */
+    .att-row   { padding: 12px 14px; }
+    .att-row .tbl-row {
+      display: flex; flex-direction: column; gap: 6px;
     }
+    /* Esconder colunas irrelevantes no mobile */
+    .att-row .tbl-row > .agent-cell { font-size: 11px; color: var(--dim); }
+    .att-row .tbl-row > .date-cell  { display: none; }
+    .att-row .tbl-row > .view-col   { display: none; }
+    /* Row topo: nome + status lado a lado */
+    .att-row .tbl-row { position: relative; }
+    .m-top-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .att-customer { flex: 1; min-width: 0; }
 
-    /* ══ DESKTOP (≥ 768px) ══ */
+    /* Ocultar botão "Ver" no mobile (tap na row inteira) */
+    .view-btn-wrap { display: none; }
+
+    /* Chat */
+    .list-panel.hidden { display: none; }
+    .chat-panel.show   { display: flex; }
+    .msgs { padding: 12px 14px; }
+    .bubble-wrap { max-width: 88%; }
+
+    /* Chat subheader compacto */
+    .chat-sub { padding: 8px 14px; }
+    .chat-sub-lbl   { font-size: 9px; }
+    .chat-sub-agent { font-size: 12px; }
+
+    /* Footer compacto */
+    .chat-footer { padding: 6px 14px; font-size: 10px; gap: 10px; }
+    .footer-label { display: none; }
+
+    /* Chat identity no topbar */
+    .chat-id { min-width: 0; flex: 1; }
+    .chat-id-name  { font-size: 14px; }
+    .chat-id-phone { font-size: 11px; gap: 4px; flex-wrap: nowrap; }
+
+    /* Mobile: esconder badge de status da coluna desktop */
+    .desktop-status { display: none; }
+    /* Desktop: esconder badge inline do m-top-row */
+    @media (min-width: 768px) { .m-status-badge { display: none; } .desktop-status { display: inline-flex; } }
+
+    /* ══ TABLET / DESKTOP (≥ 768px) ══ */
     @media (min-width: 768px) {
+      /* Topbar */
+      .brand-sub  { display: block; }
+      .sep        { display: block; }
+      .btn-back   { display: none !important; }
+      .wa-btn-text{ display: inline; }
+      .date-wrap  { padding: 6px 12px; gap: 6px; }
+      input[type="date"] { width: 120px; }
+
+      /* KPI */
+      .kpi-strip { grid-template-columns: repeat(4,1fr); padding: 14px 20px; gap: 12px; }
+      .kpi       { padding: 14px 16px; }
+      .kpi-lbl   { font-size: 10px; letter-spacing: 1px; }
+      .kpi-val   { font-size: 28px; margin-top: 6px; }
+      .kpi-sub   { display: block; }
+
+      /* Layout */
       .list-panel  { width: 440px; flex-shrink: 0; }
       .chat-panel  { display: flex !important; }
       .tbl-head    { display: block; }
-      .brand       { display: flex !important; }
-      .chat-id     { display: flex !important; }
+
+      /* Brand */
+      .brand  { display: flex !important; }
+
+      /* Chat identity */
+      .chat-id { display: flex !important; }
+      .chat-id-name  { font-size: 15px; }
+      .chat-id-phone { font-size: 12px; gap: 6px; }
+
+      /* Lista: voltar para grid tabela */
+      .att-row   { padding: 14px 20px; }
+      .att-row .tbl-row {
+        display: grid;
+        grid-template-columns: 2fr 1.8fr 1.2fr 1.1fr 1.1fr 80px;
+        gap: 10px; flex-direction: unset; align-items: center;
+      }
+      .m-top-row   { display: contents; }
+      .att-row .tbl-row > .date-cell  { display: block; }
+      .att-row .tbl-row > .agent-cell { font-size: 13px; color: var(--muted); }
+      .view-btn-wrap { display: flex; justify-content: center; }
+
+      /* Bubbles */
       .bubble-wrap { max-width: 68%; }
+
+      /* Chat subheader */
+      .chat-sub { padding: 10px 20px; }
+      .chat-sub-lbl   { font-size: 10px; }
+      .chat-sub-agent { font-size: 13px; }
+
+      /* Footer */
+      .chat-footer { padding: 8px 20px; font-size: 11px; gap: 16px; }
+      .footer-label { display: inline; }
+      .msgs { padding: 18px 20px; }
     }
+
     @media (min-width: 1100px) {
       .list-panel { width: 500px; }
+    }
+
+    /* Mobile: mostrar back + chat-id na topbar */
+    @media (max-width: 767px) {
+      .topbar { padding: 0 12px; gap: 8px; }
+      .btn-back { display: none; }   /* só mostra via JS */
     }
   </style>
 </head>
@@ -333,7 +416,7 @@
       <div class="chat-id-name"  id="cidName">—</div>
       <div class="chat-id-phone">
         <span id="cidPhone"></span>
-        <a class="wa-btn" id="cidWa" href="#" target="_blank" rel="noopener">📲 Intervir no WhatsApp</a>
+        <a class="wa-btn" id="cidWa" href="#" target="_blank" rel="noopener">📲 <span class="wa-btn-text">Intervir no WhatsApp</span></a>
       </div>
     </div>
 
@@ -410,7 +493,7 @@
         </div>
       </div>
       <div class="chat-footer" id="chatFooter" style="display:none">
-        <span><span class="live-dot"></span>Google Sheets · Dados em tempo real</span>
+        <span><span class="live-dot"></span><span class="footer-label">Google Sheets · </span>Tempo real</span>
         <span id="footerCount"></span>
         <span id="footerTime" style="margin-left:auto"></span>
       </div>
@@ -656,20 +739,22 @@ function renderList() {
     return `
       <div class="att-row ${act}" onclick="selectTalk(${i}, this)">
         <div class="tbl-row">
-          <div class="att-customer">
-            <div class="c-name">${esc(t.nome)}</div>
-            <div class="c-sub">Talk #${t.talk_id} · ${t.msgs.length} msg</div>
+          <div class="m-top-row">
+            <div class="att-customer">
+              <div class="c-name">${esc(t.nome)}</div>
+              <div class="c-sub">Talk #${t.talk_id} · ${t.msgs.length} msgs</div>
+            </div>
+            <span class="sbadge ${s.cls} m-status-badge">${s.label}</span>
           </div>
           <div>
             <a class="wa-cell-link" href="${waUrl(t.phone)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-              📲 ${esc(t.nome.split(' ')[0])}
+              📲 ${esc(tel || t.phone || '—')}
             </a>
-            <div class="wa-num">${esc(tel || '—')}</div>
           </div>
-          <div class="agent-cell">${esc(t.agente)}</div>
+          <div class="agent-cell">🤖 ${esc(t.agente)}</div>
           <div class="date-cell">${fmtDate(t.dataInicio)}</div>
-          <div><span class="sbadge ${s.cls}">${s.label}</span></div>
-          <div><button class="view-btn" onclick="selectTalk(${i}, this.closest('.att-row'))">Ver →</button></div>
+          <div><span class="sbadge ${s.cls} desktop-status">${s.label}</span></div>
+          <div class="view-btn-wrap"><button class="view-btn" onclick="event.stopPropagation();selectTalk(${i}, this.closest('.att-row'))">Ver →</button></div>
         </div>
       </div>`;
   }).join('');
