@@ -347,7 +347,7 @@
   </div>
 
   <!-- KPI STRIP -->
-  <div class="kpi-strip">
+  <div class="kpi-strip" id="kpiStrip">
     <div class="kpi k-total">
       <div class="kpi-lbl">Total</div>
       <div class="kpi-val" id="kTotal">—</div>
@@ -773,12 +773,14 @@ function navToChat() {
   document.getElementById('listPanel').classList.add('hidden');
   document.getElementById('chatPanel').classList.add('show');
   document.getElementById('btnBack').style.display = 'flex';
+  document.getElementById('kpiStrip').style.display = 'none';
 }
 function navBack() {
   document.getElementById('listPanel').classList.remove('hidden');
   document.getElementById('chatPanel').classList.remove('show');
   document.getElementById('btnBack').style.display = 'none';
   document.getElementById('chatId').style.display  = 'none';
+  document.getElementById('kpiStrip').style.display = '';
 }
 
 window.addEventListener('resize', () => {
