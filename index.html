@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CURI — Central de Atendimentos</title>
+  <style>
+    :root {
+      --bg:         #09090b;
+      --surface:    #111114;
+      --card:       #18181b;
+      --card2:      #1f1f23;
+      --border:     #2d2d32;
+      --border2:    #3a3a42;
+      --text:       #f4f4f5;
+      --muted:      #a1a1aa;
+      --dim:        #52525b;
+      --green:      #22c55e;
+      --green-bg:   #052e16;
+      --green-ring: #15803d;
+      --amber:      #f59e0b;
+      --amber-bg:   #1c1108;
+      --amber-ring: #b45309;
+      --blue:       #60a5fa;
+      --blue-bg:    #0c1e3e;
+      --blue-ring:  #1d4ed8;
+      --red:        #f87171;
+      --red-bg:     #1c0a0a;
+      --red-ring:   #b91c1c;
+      --purple:     #c084fc;
+      --purple-bg:  #1e0a2e;
+      --wa:         #25D366;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 14px; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+    a { text-decoration: none; }
+
+    /* ══ SHELL ══ */
+    .shell { display: flex; flex-direction: column; height: 100vh; }
+
+    /* ══ TOPBAR ══ */
+    .topbar {
+      height: 56px; flex-shrink: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 20px; gap: 14px;
+      z-index: 30; position: relative;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .brand-mark {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, #22c55e, #15803d);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 13px; color: #fff;
+    }
+    .brand-name { font-size: 16px; font-weight: 700; }
+    .brand-sub  { font-size: 11px; color: var(--dim); margin-top: 1px; }
+    .sep { width: 1px; height: 26px; background: var(--border); flex-shrink: 0; }
+
+    /* Chat identity shown in topbar when chat is open */
+    .chat-id { display: none; flex-direction: column; min-width: 0; flex: 1; }
+    .chat-id-name  { font-weight: 700; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chat-id-phone { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+    .wa-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--wa); color: #fff;
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px;
+      white-space: nowrap; transition: opacity .15s;
+    }
+    .wa-btn:active { opacity: .75; }
+
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .date-wrap {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--card); border: 1px solid var(--border);
+      padding: 6px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 12px; color: var(--muted);
+    }
+    input[type="date"] {
+      background: none; border: none; outline: none;
+      color: var(--text); font-size: 12px;
+      cursor: pointer; width: 120px;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.5); cursor: pointer; }
+
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--card);
+      color: var(--muted); font-size: 17px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: color .15s, border-color .15s;
+      flex-shrink: 0;
+    }
+    .icon-btn:hover { color: var(--text); border-color: var(--border2); }
+    .icon-btn.spin { animation: spin .6s linear infinite; }
+    .btn-back { display: none; }
+
+    /* ══ KPI STRIP ══ */
+    .kpi-strip {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 12px; padding: 14px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .kpi {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px;
+      position: relative; overflow: hidden;
+    }
+    .kpi::after {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      border-radius: 10px 10px 0 0;
+    }
+    .kpi.k-total::after  { background: var(--blue); }
+    .kpi.k-open::after   { background: var(--green); }
+    .kpi.k-wait::after   { background: var(--amber); }
+    .kpi.k-done::after   { background: var(--dim); }
+    .kpi-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+    .kpi-val { font-size: 28px; font-weight: 800; line-height: 1.1; margin-top: 6px; }
+    .kpi.k-total .kpi-val { color: var(--blue); }
+    .kpi.k-open  .kpi-val { color: var(--green); }
+    .kpi.k-wait  .kpi-val { color: var(--amber); }
+    .kpi.k-done  .kpi-val { color: var(--dim); }
+    .kpi-sub { font-size: 11px; color: var(--dim); margin-top: 4px; }
+
+    /* ══ WORKSPACE ══ */
+    .workspace { flex: 1; display: flex; overflow: hidden; }
+
+    /* ══ LIST PANEL ══ */
+    .list-panel {
+      width: 100%; display: flex; flex-direction: column;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+    }
+    .list-bar {
+      padding: 10px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .list-bar-title { font-size: 11px; font-weight: 600; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; }
+    .pill { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-ring); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+
+    /* Table head (desktop) */
+    .tbl-head { display: none; padding: 8px 20px; border-bottom: 1px solid var(--border); background: var(--card); flex-shrink: 0; }
+    .tbl-row {
+      display: grid;
+      grid-template-columns: 2fr 1.8fr 1.2fr 1.1fr 1.1fr 80px;
+      gap: 10px; align-items: center;
+    }
+    .tbl-head .tbl-row { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+    .att-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+    /* Attendance row */
+    .att-row {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: background .1s;
+    }
+    .att-row:hover   { background: var(--card); }
+    .att-row.active  { background: var(--card2); border-left: 2px solid var(--green); }
+    .att-row .tbl-row { align-items: center; }
+
+    /* Customer cell */
+    .c-name { font-weight: 600; font-size: 14px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .c-sub  { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+    /* WhatsApp cell */
+    .wa-cell-link {
+      display: inline-flex; align-items: center; gap: 4px;
+      color: var(--wa); font-size: 13px; font-weight: 500;
+    }
+    .wa-cell-link:active { opacity: .7; }
+    .wa-num { font-size: 11px; color: var(--muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .agent-cell { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .date-cell  { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+    /* Status badge */
+    .sbadge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 700;
+      padding: 3px 9px; border-radius: 20px;
+      letter-spacing: .2px; white-space: nowrap;
+    }
+    .sbadge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .s-open { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-ring); }
+    .s-open::before { background: var(--green); animation: pulse 2s infinite; }
+    .s-wait { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-ring); }
+    .s-wait::before { background: var(--amber); }
+    .s-done { background: var(--card); color: var(--dim); border: 1px solid var(--border); }
+    .s-done::before { background: var(--dim); }
+
+    .view-btn {
+      padding: 6px 12px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--card2);
+      color: var(--muted); font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+      text-align: center;
+    }
+    .view-btn:hover { border-color: var(--border2); color: var(--text); }
+
+    /* ══ CHAT PANEL ══ */
+    .chat-panel { display: none; flex-direction: column; flex: 1; overflow: hidden; background: var(--bg); }
+
+    .chat-sub {
+      padding: 10px 20px; flex-shrink: 0;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .chat-sub-left { display: flex; flex-direction: column; gap: 1px; }
+    .chat-sub-lbl  { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+    .chat-sub-agent{ font-size: 13px; color: var(--muted); }
+
+    .msgs { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+
+    /* Bubble */
+    .bubble-wrap { display: flex; flex-direction: column; max-width: 72%; }
+    .bubble-wrap.cliente  { align-self: flex-end; }
+    .bubble-wrap.agente   { align-self: flex-start; }
+    .bubble-wrap.sistema  { align-self: center; max-width: 90%; }
+
+    .bubble {
+      padding: 10px 14px; border-radius: 14px;
+      font-size: 14px; line-height: 1.58; word-break: break-word;
+      white-space: pre-wrap;
+    }
+    .bubble-wrap.cliente .bubble { background: #1a3d22; color: #d1fae5; border-bottom-right-radius: 4px; }
+    .bubble-wrap.agente  .bubble { background: #1a203e; color: #dbeafe; border-bottom-left-radius: 4px; }
+    .bubble-wrap.sistema .bubble { background: var(--card); color: var(--muted); font-size: 12px; font-style: italic; text-align: center; border-radius: 10px; padding: 7px 14px; }
+
+    .bubble-meta { display: flex; gap: 5px; align-items: center; margin-top: 5px; flex-wrap: wrap; }
+    .bubble-wrap.cliente .bubble-meta { justify-content: flex-end; }
+    .bubble-wrap.sistema .bubble-meta { justify-content: center; }
+    .bubble-time { font-size: 10px; color: var(--dim); }
+
+    .mbadge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+    .mb-cli  { background: #3a2408; color: #fb923c; }
+    .mb-ia   { background: var(--green-bg); color: var(--green); }
+    .mb-hum  { background: var(--blue-bg); color: var(--blue); }
+    .mb-sys  { background: var(--purple-bg); color: var(--purple); }
+
+    /* Footer */
+    .chat-footer {
+      padding: 8px 20px; flex-shrink: 0;
+      background: var(--surface); border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+      font-size: 11px; color: var(--dim);
+    }
+    .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-right: 5px; animation: pulse 2s infinite; }
+
+    /* Empty / loader */
+    .empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--muted); text-align: center; padding: 32px; }
+    .empty-ico { font-size: 38px; opacity: .25; }
+    .spin-ring { width: 24px; height: 24px; border: 2px solid var(--border2); border-top-color: var(--green); border-radius: 50%; animation: spin .7s linear infinite; }
+    .no-data { padding: 40px 20px; text-align: center; color: var(--muted); }
+
+    @keyframes spin  { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.25} }
+
+    /* ══ MOBILE (< 768px) ══ */
+    @media (max-width: 767px) {
+      .kpi-strip { grid-template-columns: repeat(2,1fr); padding: 10px 14px; gap: 8px; }
+      .kpi-val   { font-size: 22px; }
+      .topbar    { padding: 0 14px; }
+      .date-wrap { padding: 6px 8px; }
+      input[type="date"] { width: 108px; }
+
+      /* Card layout for mobile rows */
+      .att-row .tbl-row {
+        grid-template-columns: 1fr auto;
+        grid-template-areas: "name status" "wa   action" "ag   ag";
+        grid-template-rows: auto auto auto;
+      }
+      .att-row .tbl-row > :nth-child(1) { grid-area: name; }
+      .att-row .tbl-row > :nth-child(2) { grid-area: wa; }
+      .att-row .tbl-row > :nth-child(3) { grid-area: ag; font-size: 11px; }
+      .att-row .tbl-row > :nth-child(4) { display: none; }
+      .att-row .tbl-row > :nth-child(5) { grid-area: status; display: flex; justify-content: flex-end; }
+      .att-row .tbl-row > :nth-child(6) { grid-area: action; display: flex; justify-content: flex-end; }
+
+      .list-panel.hidden { display: none; }
+      .chat-panel.show   { display: flex; }
+
+      .btn-back { display: flex !important; }
+      .brand    { display: none; }
+      .sep      { display: none; }
+      .chat-id  { display: flex !important; }
+
+      .msgs { padding: 12px 14px; }
+      .bubble-wrap { max-width: 88%; }
+    }
+
+    /* ══ DESKTOP (≥ 768px) ══ */
+    @media (min-width: 768px) {
+      .list-panel  { width: 440px; flex-shrink: 0; }
+      .chat-panel  { display: flex !important; }
+      .tbl-head    { display: block; }
+      .brand       { display: flex !important; }
+      .chat-id     { display: flex !important; }
+      .bubble-wrap { max-width: 68%; }
+    }
+    @media (min-width: 1100px) {
+      .list-panel { width: 500px; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <button class="icon-btn btn-back" id="btnBack" onclick="navBack()" title="Voltar">←</button>
+
+    <div class="brand">
+      <div class="brand-mark">C</div>
+      <div>
+        <div class="brand-name">CURI</div>
+        <div class="brand-sub">Central de Atendimentos</div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="chat-id" id="chatId" style="display:none">
+      <div class="chat-id-name"  id="cidName">—</div>
+      <div class="chat-id-phone">
+        <span id="cidPhone"></span>
+        <a class="wa-btn" id="cidWa" href="#" target="_blank" rel="noopener">📲 Intervir no WhatsApp</a>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <label class="date-wrap" title="Filtrar por data">
+        📅
+        <input type="date" id="datePicker" onchange="applyFilter()">
+      </label>
+      <button class="icon-btn" id="btnRefresh" onclick="loadData()" title="Atualizar">↻</button>
+    </div>
+  </div>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi k-total">
+      <div class="kpi-lbl">Total</div>
+      <div class="kpi-val" id="kTotal">—</div>
+      <div class="kpi-sub">atendimentos</div>
+    </div>
+    <div class="kpi k-open">
+      <div class="kpi-lbl">Em Aberto</div>
+      <div class="kpi-val" id="kOpen">—</div>
+      <div class="kpi-sub">aguardando agente</div>
+    </div>
+    <div class="kpi k-wait">
+      <div class="kpi-lbl">Aguardando Cliente</div>
+      <div class="kpi-val" id="kWait">—</div>
+      <div class="kpi-sub">agente respondeu</div>
+    </div>
+    <div class="kpi k-done">
+      <div class="kpi-lbl">Finalizados</div>
+      <div class="kpi-val" id="kDone">—</div>
+      <div class="kpi-sub">encerrados</div>
+    </div>
+  </div>
+
+  <!-- WORKSPACE -->
+  <div class="workspace">
+
+    <!-- LIST PANEL -->
+    <div class="list-panel" id="listPanel">
+      <div class="list-bar">
+        <span class="list-bar-title">Atendimentos</span>
+        <span class="pill" id="listCount">0</span>
+      </div>
+      <div class="tbl-head">
+        <div class="tbl-row">
+          <span>Cliente</span>
+          <span>WhatsApp</span>
+          <span>Agente</span>
+          <span>Início</span>
+          <span>Status</span>
+          <span style="text-align:center">Ação</span>
+        </div>
+      </div>
+      <div class="att-list" id="attList">
+        <div class="empty"><div class="spin-ring"></div></div>
+      </div>
+    </div>
+
+    <!-- CHAT PANEL -->
+    <div class="chat-panel" id="chatPanel">
+      <div class="chat-sub" id="chatSub" style="display:none">
+        <div class="chat-sub-left">
+          <div class="chat-sub-lbl">Histórico da Conversa · Talk #<span id="subTalkId">—</span></div>
+          <div class="chat-sub-agent" id="subAgent">—</div>
+        </div>
+        <span class="sbadge" id="subStatus"></span>
+      </div>
+      <div class="msgs" id="msgs">
+        <div class="empty">
+          <div class="empty-ico">💬</div>
+          <div>Selecione um atendimento para ver a conversa</div>
+        </div>
+      </div>
+      <div class="chat-footer" id="chatFooter" style="display:none">
+        <span><span class="live-dot"></span>Google Sheets · Dados em tempo real</span>
+        <span id="footerCount"></span>
+        <span id="footerTime" style="margin-left:auto"></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   CONFIGURAÇÃO
+══════════════════════════════════════════════ */
+const SHEET  = '1vOlvmsj65CKsqRqj1EftY4zTLO3IIWA8yhsrAch1-sk';
+const GID_MSGS = '754433413';   // aba mensagens — estruturada
+const GID_CLI  = '907718646';   // aba clientes
+
+let allTalks = [];   // array de atendimentos processados
+let filtered = [];   // após filtro de data
+let selIdx   = -1;
+
+// Data padrão = hoje
+const today = new Date().toISOString().slice(0, 10);
+document.getElementById('datePicker').value = today;
+
+const csvUrl = gid =>
+  `https://docs.google.com/spreadsheets/d/${SHEET}/export?format=csv&gid=${gid}`;
+
+/* ══════════════════════════════════════════════
+   CSV PARSER — suporta campos multilinhas
+══════════════════════════════════════════════ */
+function parseCSV(raw) {
+  const rows = [];
+  let row = [], cell = '', inQ = false;
+
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+
+    if (ch === '"') {
+      if (inQ && raw[i + 1] === '"') { cell += '"'; i++; }   // "" → "
+      else inQ = !inQ;
+    } else if (ch === ',' && !inQ) {
+      row.push(cell); cell = '';
+    } else if ((ch === '\n' || ch === '\r') && !inQ) {
+      if (ch === '\r' && raw[i + 1] === '\n') i++;           // CRLF
+      row.push(cell); cell = '';
+      if (row.length > 0 && row.some(c => c !== '')) rows.push(row);
+      row = [];
+    } else {
+      cell += ch;
+    }
+  }
+  if (cell !== '' || row.length) { row.push(cell); if (row.some(c => c !== '')) rows.push(row); }
+  return rows;
+}
+
+function csvToObjects(rows) {
+  if (rows.length < 2) return [];
+  const hdrs = rows[0].map(h => h.trim());
+  return rows.slice(1).map(row => {
+    const obj = {};
+    hdrs.forEach((h, i) => { obj[h] = (row[i] || '').trim(); });
+    return obj;
+  });
+}
+
+/* ══════════════════════════════════════════════
+   UTILITÁRIOS
+══════════════════════════════════════════════ */
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function waUrl(phone) {
+  const n = (phone||'').replace(/\D/g,'');
+  return n ? `https://wa.me/${n}` : '#';
+}
+function fmtPhone(p) {
+  const n = (p||'').replace(/\D/g,'');
+  if (!n) return '';
+  const cc = n.slice(0,2), dd = n.slice(2,4), loc = n.slice(4);
+  if (loc.length === 9) return `+${cc} ${dd} ${loc.slice(0,5)}-${loc.slice(5)}`;
+  if (loc.length === 8) return `+${cc} ${dd} ${loc.slice(0,4)}-${loc.slice(4)}`;
+  return `+${n}`;
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso.replace(' ','T'));
+  if (isNaN(d)) return iso.slice(0,10);
+  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'})
+    + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+function fmtTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso.replace(' ','T'));
+  if (isNaN(d)) return '';
+  return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+/* ══════════════════════════════════════════════
+   PROCESSAR ATENDIMENTOS
+══════════════════════════════════════════════ */
+function buildTalks(msgRows, cliRows) {
+  // Index clientes por customer_id
+  const cliById = {};
+  for (const c of cliRows) { if (c.customer_id) cliById[c.customer_id] = c; }
+
+  // Agrupar mensagens por talk_id
+  const groups = {};
+  for (const m of msgRows) {
+    const tid = m.talk_id || 'unknown';
+    if (!groups[tid]) groups[tid] = [];
+    groups[tid].push(m);
+  }
+
+  return Object.entries(groups).map(([talk_id, msgs]) => {
+    // Mensagens em ordem cronológica (planilha já está ASC)
+    const sorted = [...msgs].sort((a,b) =>
+      new Date(a.data_hora_mensagem) - new Date(b.data_hora_mensagem)
+    );
+
+    // Cliente
+    const custId = sorted[0]?.customer_id || '';
+    const cli    = cliById[custId] || {};
+
+    // Telefone: from_number do campo messages > clientes sheet
+    const fromMsg = sorted.find(m => m.from_number);
+    const rawPhone = fromMsg?.from_number || cli.telefone_normalizado || '';
+    const phone  = rawPhone.startsWith('55') ? rawPhone : (rawPhone ? '55' + rawPhone : '');
+
+    // Nome do cliente
+    const nome = cli.nome_cliente || `Cliente #${custId}`;
+
+    // Agente responsável (última mensagem de agente_humano ou agente_ia)
+    const agentMsg = [...sorted].reverse().find(m => m.autor_classificado === 'agente_humano' || m.autor_classificado === 'agente_ia');
+    const agente   = agentMsg?.nome_autor || 'Não atribuído';
+
+    // Data início e última mensagem
+    const dataInicio = sorted[0]?.data_hora_mensagem || '';
+    const dataFim    = sorted[sorted.length-1]?.data_hora_mensagem || '';
+    const dateKey    = dataInicio.slice(0,10); // YYYY-MM-DD para filtro
+
+    // Status: baseado na última mensagem com conteúdo
+    const lastMeaningful = [...sorted].reverse().find(m => m.message?.trim() && m.autor_classificado !== 'sistema');
+    let status;
+    if (!lastMeaningful) {
+      status = 'open';
+    } else if (lastMeaningful.autor_classificado === 'cliente') {
+      status = 'open';     // cliente respondeu, agente precisa atender
+    } else {
+      status = 'waiting';  // agente respondeu, aguardando retorno do cliente
+    }
+    // TODO: "done" quando tiver campo finished_at
+
+    return { talk_id, msgs: sorted, custId, nome, phone, agente, dataInicio, dataFim, dateKey, status, cli };
+  });
+}
+
+/* ══════════════════════════════════════════════
+   CARREGAR DADOS
+══════════════════════════════════════════════ */
+async function loadData() {
+  const btn = document.getElementById('btnRefresh');
+  btn.classList.add('spin'); btn.disabled = true;
+
+  setLoading(true);
+
+  try {
+    const [r1, r2] = await Promise.all([
+      fetch(csvUrl(GID_MSGS)),
+      fetch(csvUrl(GID_CLI))
+    ]);
+    const [t1, t2] = await Promise.all([r1.text(), r2.text()]);
+
+    const msgRows = csvToObjects(parseCSV(t1));
+    const cliRows = csvToObjects(parseCSV(t2));
+
+    allTalks = buildTalks(msgRows, cliRows);
+    applyFilter();
+
+  } catch (err) {
+    document.getElementById('attList').innerHTML =
+      `<div class="empty"><div class="empty-ico">❌</div><div>${esc(err.message)}</div></div>`;
+  } finally {
+    btn.classList.remove('spin'); btn.disabled = false;
+  }
+}
+
+function setLoading(on) {
+  if (on) {
+    document.getElementById('attList').innerHTML =
+      '<div class="empty"><div class="spin-ring"></div><div>Carregando…</div></div>';
+  }
+}
+
+/* ══════════════════════════════════════════════
+   FILTRO DE DATA
+══════════════════════════════════════════════ */
+function applyFilter() {
+  const d = document.getElementById('datePicker').value;
+  filtered = d
+    ? allTalks.filter(t => t.dateKey === d || t.dataFim.slice(0,10) === d)
+    : [...allTalks];
+
+  // fallback: se nada no filtro, mostrar todos
+  if (filtered.length === 0 && allTalks.length > 0) filtered = [...allTalks];
+
+  updateKPIs();
+  renderList();
+}
+
+/* ══════════════════════════════════════════════
+   KPIs
+══════════════════════════════════════════════ */
+function updateKPIs() {
+  const open = filtered.filter(t => t.status === 'open').length;
+  const wait = filtered.filter(t => t.status === 'waiting').length;
+  const done = filtered.filter(t => t.status === 'done').length;
+  document.getElementById('kTotal').textContent = filtered.length;
+  document.getElementById('kOpen').textContent  = open;
+  document.getElementById('kWait').textContent  = wait;
+  document.getElementById('kDone').textContent  = done;
+  document.getElementById('listCount').textContent = filtered.length;
+}
+
+/* ══════════════════════════════════════════════
+   RENDERIZAR LISTA
+══════════════════════════════════════════════ */
+const statusMap = {
+  open:    { cls:'s-open', label:'Em Aberto' },
+  waiting: { cls:'s-wait', label:'Aguardando Cliente' },
+  done:    { cls:'s-done', label:'Finalizado' },
+};
+
+function renderList() {
+  const el = document.getElementById('attList');
+  if (!filtered.length) {
+    el.innerHTML = '<div class="no-data">📭 Nenhum atendimento para esta data</div>';
+    return;
+  }
+  el.innerHTML = filtered.map((t, i) => {
+    const s   = statusMap[t.status] || statusMap.open;
+    const tel = fmtPhone(t.phone);
+    const act = i === selIdx ? 'active' : '';
+    return `
+      <div class="att-row ${act}" onclick="selectTalk(${i}, this)">
+        <div class="tbl-row">
+          <div class="att-customer">
+            <div class="c-name">${esc(t.nome)}</div>
+            <div class="c-sub">Talk #${t.talk_id} · ${t.msgs.length} msg</div>
+          </div>
+          <div>
+            <a class="wa-cell-link" href="${waUrl(t.phone)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+              📲 ${esc(t.nome.split(' ')[0])}
+            </a>
+            <div class="wa-num">${esc(tel || '—')}</div>
+          </div>
+          <div class="agent-cell">${esc(t.agente)}</div>
+          <div class="date-cell">${fmtDate(t.dataInicio)}</div>
+          <div><span class="sbadge ${s.cls}">${s.label}</span></div>
+          <div><button class="view-btn" onclick="selectTalk(${i}, this.closest('.att-row'))">Ver →</button></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════
+   SELECIONAR ATENDIMENTO
+══════════════════════════════════════════════ */
+function selectTalk(idx, el) {
+  document.querySelectorAll('.att-row').forEach(r => r.classList.remove('active'));
+  el.classList.add('active');
+  selIdx = idx;
+  renderChat(idx);
+  if (window.innerWidth < 768) navToChat();
+}
+
+/* ══════════════════════════════════════════════
+   RENDERIZAR CHAT
+══════════════════════════════════════════════ */
+function renderChat(idx) {
+  const t = filtered[idx];
+
+  // Topbar identity
+  document.getElementById('cidName').textContent = t.nome;
+  document.getElementById('cidPhone').textContent = fmtPhone(t.phone);
+  document.getElementById('cidWa').href = waUrl(t.phone);
+  document.getElementById('cidWa').style.display = t.phone ? 'inline-flex' : 'none';
+  document.getElementById('chatId').style.display = 'flex';
+
+  // Subheader
+  const s = statusMap[t.status] || statusMap.open;
+  document.getElementById('chatSub').style.display    = 'flex';
+  document.getElementById('subTalkId').textContent    = t.talk_id;
+  document.getElementById('subAgent').textContent     = `Agente: ${t.agente}`;
+  const sub = document.getElementById('subStatus');
+  sub.className   = `sbadge ${s.cls}`;
+  sub.textContent = s.label;
+
+  // Footer
+  document.getElementById('chatFooter').style.display = 'flex';
+  document.getElementById('footerCount').textContent  = `${t.msgs.length} mensagens`;
+  document.getElementById('footerTime').textContent   = 'Atualizado às ' + new Date().toLocaleTimeString('pt-BR');
+
+  // Mensagens
+  const visible = t.msgs.filter(m => m.message?.trim());
+  const wrap = document.getElementById('msgs');
+  wrap.innerHTML = visible.length
+    ? visible.map(m => buildBubble(m)).join('')
+    : '<div class="empty"><div class="empty-ico">💬</div><div>Sem mensagens</div></div>';
+
+  requestAnimationFrame(() => { wrap.scrollTop = wrap.scrollHeight; });
+}
+
+/* ══════════════════════════════════════════════
+   BOLHA DE MENSAGEM
+══════════════════════════════════════════════ */
+function buildBubble(m) {
+  const autor  = m.autor_classificado || 'sistema';
+  const nome   = m.nome_autor || '';
+  const text   = (m.message || '').trim();
+  const hora   = fmtTime(m.data_hora_mensagem);
+
+  let cls, badge, content;
+
+  if (autor === 'cliente') {
+    cls     = 'cliente';
+    badge   = `<span class="mbadge mb-cli">👤 Cliente</span>`;
+    content = esc(text);
+
+  } else if (autor === 'agente_ia') {
+    cls     = 'agente';
+    badge   = `<span class="mbadge mb-ia">🤖 ${esc(nome || 'Agente IA')}</span>`;
+    content = esc(text);
+
+  } else if (autor === 'agente_humano') {
+    cls     = 'agente';
+    badge   = `<span class="mbadge mb-hum">👤 ${esc(nome || 'Agente')}</span>`;
+    content = esc(text);
+
+  } else {
+    // sistema
+    cls     = 'sistema';
+    badge   = `<span class="mbadge mb-sys">⚙️ Sistema</span>`;
+    content = esc(text);
+  }
+
+  return `
+    <div class="bubble-wrap ${cls}">
+      <div class="bubble">${content}</div>
+      <div class="bubble-meta">
+        ${badge}
+        ${hora ? `<span class="bubble-time">${hora}</span>` : ''}
+      </div>
+    </div>`;
+}
+
+/* ══════════════════════════════════════════════
+   NAVEGAÇÃO MOBILE
+══════════════════════════════════════════════ */
+function navToChat() {
+  document.getElementById('listPanel').classList.add('hidden');
+  document.getElementById('chatPanel').classList.add('show');
+  document.getElementById('btnBack').style.display = 'flex';
+}
+function navBack() {
+  document.getElementById('listPanel').classList.remove('hidden');
+  document.getElementById('chatPanel').classList.remove('show');
+  document.getElementById('btnBack').style.display = 'none';
+  document.getElementById('chatId').style.display  = 'none';
+}
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth >= 768) {
+    document.getElementById('listPanel').classList.remove('hidden');
+    document.getElementById('chatPanel').classList.remove('show');
+    document.getElementById('btnBack').style.display = 'none';
+    if (selIdx >= 0) document.getElementById('chatId').style.display = 'flex';
+  }
+});
+
+/* ══════════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════════ */
+loadData();
+</script>
+</body>
+</html>
