@@ -525,6 +525,20 @@ const csvUrl = gid =>
   `https://docs.google.com/spreadsheets/d/${SHEET}/export?format=csv&gid=${gid}`;
 
 /* ══════════════════════════════════════════════
+   CORRETOR DE ENCODING (Google Sheets retorna Latin-1 como UTF-8)
+══════════════════════════════════════════════ */
+function fixEncoding(text) {
+  return text.replace(/[À-ÿ]/g, c => {
+    const bytes = [c.charCodeAt(0)];
+    try {
+      return new TextDecoder('latin1').decode(new Uint8Array(bytes));
+    } catch {
+      return c;
+    }
+  });
+}
+
+/* ══════════════════════════════════════════════
    CSV PARSER — suporta campos multilinhas
 ══════════════════════════════════════════════ */
 function parseCSV(raw) {
@@ -557,7 +571,16 @@ function csvToObjects(rows) {
   const hdrs = rows[0].map(h => h.trim());
   return rows.slice(1).map(row => {
     const obj = {};
-    hdrs.forEach((h, i) => { obj[h] = (row[i] || '').trim(); });
+    hdrs.forEach((h, i) => {
+      let val = (row[i] || '').trim();
+      // Corrigir encoding Latin-1 que veio como UTF-8 do Google Sheets
+      val = val.replace(/Ã¡/g, 'á').replace(/Ã©/g, 'é').replace(/Ã­/g, 'í')
+               .replace(/Ã³/g, 'ó').replace(/Ã¹/g, 'ù').replace(/Ã£/g, 'ã')
+               .replace(/Ã±/g, 'ñ').replace(/Ã§/g, 'ç').replace(/Ã´/g, 'ô')
+               .replace(/Â­/g, '-').replace(/ï¸â£/g, '').replace(/ð£/g, '👣')
+               .replace(/Ãª/g, 'ê').replace(/Ã¦/g, 'æ').replace(/â­/g, '⭐');
+      obj[h] = val;
+    });
     return obj;
   });
 }
@@ -663,18 +686,19 @@ async function loadData() {
   setLoading(true);
 
   try {
-    const [r1, r2] = await Promise.all([
-      fetch(csvUrl(GID_MSGS)),
-      fetch(csvUrl(GID_CLI))
-    ]);
-    const [t1, t2] = await Promise.all([r1.text(), r2.text()]);
+    // Tentar carregar JSON (sincronizado com encoding correto)
+    const resp = await fetch('data.json?t=' + Date.now());
 
-    const msgRows = csvToObjects(parseCSV(t1));
-    const cliRows = csvToObjects(parseCSV(t2));
+    if (resp.ok) {
+      const data = await resp.json();
+      const msgRows = data.messages || [];
+      const cliRows = data.customers || [];
 
-    allTalks = buildTalks(msgRows, cliRows);
-    applyFilter();
-
+      allTalks = buildTalks(msgRows, cliRows);
+      applyFilter();
+    } else {
+      throw new Error('Dados não disponíveis - tente recarregar a página');
+    }
   } catch (err) {
     document.getElementById('attList').innerHTML =
       `<div class="empty"><div class="empty-ico">❌</div><div>${esc(err.message)}</div></div>`;
