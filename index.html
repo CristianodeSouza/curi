@@ -686,20 +686,28 @@ async function loadData() {
   setLoading(true);
 
   try {
-    // Tentar carregar JSON (sincronizado com encoding correto)
     const resp = await fetch('data.json?t=' + Date.now());
+    console.log('[DEBUG] Fetch response status:', resp.status);
 
     if (resp.ok) {
       const data = await resp.json();
       const msgRows = data.messages || [];
       const cliRows = data.customers || [];
 
+      console.log('[DEBUG] Mensagens carregadas:', msgRows.length);
+      console.log('[DEBUG] Clientes carregados:', cliRows.length);
+
       allTalks = buildTalks(msgRows, cliRows);
+      console.log('[DEBUG] Talks construídos:', allTalks.length);
+      console.log('[DEBUG] Total de mensagens nos talks:', allTalks.reduce((s,t) => s + t.msgs.length, 0));
+
       applyFilter();
+      console.log('[DEBUG] Filtro aplicado. Talks filtrados:', filtered.length);
     } else {
       throw new Error('Dados não disponíveis - tente recarregar a página');
     }
   } catch (err) {
+    console.error('[ERROR]', err);
     document.getElementById('attList').innerHTML =
       `<div class="empty"><div class="empty-ico">❌</div><div>${esc(err.message)}</div></div>`;
   } finally {
