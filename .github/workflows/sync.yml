@@ -1,0 +1,42 @@
+name: Sincronizar Dados CURI
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # A cada hora
+  workflow_dispatch:      # Permite execução manual
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Sync data from Google Sheets
+        run: python3 sync_data.py
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "bot@github.com"
+          git config --local user.name "GitHub Bot"
+
+      - name: Commit and push changes
+        run: |
+          git add data.json
+          if ! git diff --quiet --cached; then
+            git commit -m "chore: sincronizar dados do Google Sheets"
+            git push origin main
+            echo "✓ Dados sincronizados com sucesso"
+          else
+            echo "✓ Nenhuma mudança nos dados"
+          fi
