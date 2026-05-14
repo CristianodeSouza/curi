@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-14T15:45:10.711633",
+  "timestamp": "2026-05-14T16:37:26.754427",
   "sheet_id": "1vOlvmsj65CKsqRqj1EftY4zTLO3IIWA8yhsrAch1-sk",
   "messages": [
     {
@@ -976,6 +976,45 @@
       "reaction": "",
       "customer_reaction": "",
       "created_at_base": ""
+    },
+    {
+      "message_id": "30041",
+      "talk_id": "1935",
+      "customer_id": "1097",
+      "channel_id": "1",
+      "queue_id": "",
+      "user_id": "8",
+      "agent_id": "",
+      "data_hora_mensagem": "2026-05-13 17:27:49",
+      "type": "in",
+      "direcao": "entrada",
+      "autor_classificado": "cliente",
+      "nome_autor": "Ana - Atendente Virtual",
+      "is_bot": "FALSE",
+      "was_generated_by_ai": "FALSE",
+      "is_intervention": "FALSE",
+      "message": "Quero falar com o atendimento humano",
+      "subject": "",
+      "response_from": "",
+      "from_number": "51997654180",
+      "has_attachment": "FALSE",
+      "attachment_type_id": "",
+      "attachment_type_description": "",
+      "attachment_url": "",
+      "file_name": "",
+      "has_error": "FALSE",
+      "error_reason": "",
+      "was_blocked": "FALSE",
+      "read_at": "2026-05-13 17:28:08",
+      "delivered_at": "",
+      "left_at": "",
+      "status": "3",
+      "is_template": "FALSE",
+      "is_forwarded": "FALSE",
+      "is_ads": "FALSE",
+      "reaction": "",
+      "customer_reaction": "",
+      "created_at_base": ""
     }
   ],
   "customers": [
@@ -990,7 +1029,7 @@
       "insert_origin": "",
       "is_active": "TRUE",
       "created_at_cliente": "",
-      "updated_at_base": "2026-05-13T21:05:21.014Z"
+      "updated_at_base": "2026-05-14T15:46:16.926Z"
     },
     {
       "customer_id": "1242",
@@ -1020,7 +1059,7 @@
     }
   ],
   "stats": {
-    "message_count": 25,
+    "message_count": 26,
     "customer_count": 3
   }
 }
