@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-15T13:32:47.331290",
+  "timestamp": "2026-05-15T14:46:44.978714",
   "sheet_id": "1vOlvmsj65CKsqRqj1EftY4zTLO3IIWA8yhsrAch1-sk",
   "messages": [
     {
@@ -1015,6 +1015,45 @@
       "reaction": "",
       "customer_reaction": "",
       "created_at_base": ""
+    },
+    {
+      "message_id": "30079",
+      "talk_id": "1936",
+      "customer_id": "1097",
+      "channel_id": "1",
+      "queue_id": "",
+      "user_id": "2",
+      "agent_id": "",
+      "data_hora_mensagem": "2026-05-15 11:41:25",
+      "type": "in",
+      "direcao": "entrada",
+      "autor_classificado": "cliente",
+      "nome_autor": "PipeBot",
+      "is_bot": "TRUE",
+      "was_generated_by_ai": "FALSE",
+      "is_intervention": "FALSE",
+      "message": "Olá",
+      "subject": "",
+      "response_from": "",
+      "from_number": "51997654180",
+      "has_attachment": "FALSE",
+      "attachment_type_id": "",
+      "attachment_type_description": "",
+      "attachment_url": "",
+      "file_name": "",
+      "has_error": "FALSE",
+      "error_reason": "",
+      "was_blocked": "FALSE",
+      "read_at": "2026-05-15 11:42:10",
+      "delivered_at": "",
+      "left_at": "",
+      "status": "3",
+      "is_template": "FALSE",
+      "is_forwarded": "FALSE",
+      "is_ads": "FALSE",
+      "reaction": "",
+      "customer_reaction": "",
+      "created_at_base": ""
     }
   ],
   "customers": [
@@ -1029,7 +1068,7 @@
       "insert_origin": "",
       "is_active": "TRUE",
       "created_at_cliente": "",
-      "updated_at_base": "2026-05-14T15:46:16.926Z"
+      "updated_at_base": "2026-05-15T14:42:20.964Z"
     },
     {
       "customer_id": "1242",
@@ -1059,7 +1098,7 @@
     }
   ],
   "stats": {
-    "message_count": 26,
+    "message_count": 27,
     "customer_count": 3
   }
 }
