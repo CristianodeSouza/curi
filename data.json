@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-15T16:33:39.066285",
+  "timestamp": "2026-05-15T17:30:14.183924",
   "sheet_id": "1vOlvmsj65CKsqRqj1EftY4zTLO3IIWA8yhsrAch1-sk",
   "messages": [
     {
@@ -1054,6 +1054,45 @@
       "reaction": "",
       "customer_reaction": "",
       "created_at_base": ""
+    },
+    {
+      "message_id": "30085",
+      "talk_id": "1937",
+      "customer_id": "1243",
+      "channel_id": "1",
+      "queue_id": "",
+      "user_id": "2",
+      "agent_id": "",
+      "data_hora_mensagem": "2026-05-15 13:53:18",
+      "type": "in",
+      "direcao": "entrada",
+      "autor_classificado": "cliente",
+      "nome_autor": "PipeBot",
+      "is_bot": "TRUE",
+      "was_generated_by_ai": "FALSE",
+      "is_intervention": "FALSE",
+      "message": "Olá\nBoa tarde \nEncontrei informações de sua operação na Internet e gostaria de saber maiores informações detalhes fotos principalmente das instalações quartos enfim todas as questões inclusive os custos e logística. \nPor sua atenção obrigado.",
+      "subject": "",
+      "response_from": "",
+      "from_number": "16992451113",
+      "has_attachment": "FALSE",
+      "attachment_type_id": "",
+      "attachment_type_description": "",
+      "attachment_url": "",
+      "file_name": "",
+      "has_error": "FALSE",
+      "error_reason": "",
+      "was_blocked": "FALSE",
+      "read_at": "2026-05-15 13:54:10",
+      "delivered_at": "",
+      "left_at": "",
+      "status": "3",
+      "is_template": "FALSE",
+      "is_forwarded": "FALSE",
+      "is_ads": "FALSE",
+      "reaction": "",
+      "customer_reaction": "",
+      "created_at_base": ""
     }
   ],
   "customers": [
@@ -1095,10 +1134,23 @@
       "is_active": "TRUE",
       "created_at_cliente": "",
       "updated_at_base": "2026-05-13T20:42:16.144Z"
+    },
+    {
+      "customer_id": "1243",
+      "nome_cliente": "JOSÉ FOGANHOLO",
+      "telefone_normalizado": "5516992451113",
+      "telefone_full_number": "16992451113",
+      "telefone_full_number_cc": "#ERROR!",
+      "email_principal": "",
+      "wa_is_business": "FALSE",
+      "insert_origin": "",
+      "is_active": "TRUE",
+      "created_at_cliente": "",
+      "updated_at_base": "2026-05-15T16:54:24.844Z"
     }
   ],
   "stats": {
-    "message_count": 27,
-    "customer_count": 3
+    "message_count": 28,
+    "customer_count": 4
   }
 }
